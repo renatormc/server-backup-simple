@@ -1,0 +1,13 @@
+{
+    "folders": [
+        {"from": "user@ip:/home/files", "to": "/home/files"}
+    ],
+    "db_ssh": "user@ip",
+    "db_dest_folder": "/home/db",
+    "pg_user": "user",
+    "pg_password": "password.",
+    "pg_host": "ip",
+    "pg_port": "5432",
+    "pg_db": "user",
+    "db_container_name": ""
+}
