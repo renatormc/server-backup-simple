@@ -26,6 +26,10 @@ type BackupConfig struct {
 	BackupTimes      []string `json:"backup_times"`
 	BackupAtStartup  bool     `json:"backup_at_startup"`
 	DaysBeforeDelete int64    `json:"days_before_delete"`
+	RcloneSync       []struct {
+		From string `json:"from"`
+		To   string `json:"to"`
+	} `json:"rclone_sync"`
 }
 
 type Config struct {

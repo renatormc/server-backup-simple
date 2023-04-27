@@ -65,6 +65,7 @@ func BackupAll(c BackupConfig) {
 		defer wg.Done()
 	}()
 	wg.Wait()
+	RcloneSync(c)
 }
 
 func DeleteOld(c BackupConfig) {
@@ -87,6 +88,19 @@ func DeleteOld(c BackupConfig) {
 			fmt.Println(t)
 		}
 	}
+}
+
+func RcloneSync(c BackupConfig) {
+	log.Printf("Sincronizando rclone de %q\n", c.Name)
+	for _, item := range c.RcloneSync {
+		cmd := exec.Command("rclone", "sync", item.From, item.To)
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		if err := cmd.Run(); err != nil {
+			log.Println(err)
+		}
+	}
+
 }
 
 func main() {

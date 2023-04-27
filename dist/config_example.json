@@ -15,5 +15,8 @@
         "09:35"
     ],
     "days_before_delete": 30,
-    "backup_at_startup": true
+    "backup_at_startup": true,
+    "rclone_sync": [
+        {"from": "/folder/from", "to": "gdrive:/folder/to"}
+    ]
 }
