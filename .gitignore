@@ -1,3 +1,4 @@
-dist/config.json
+dist/config
 dist/server-backup-simple
 dist/server-backup-simple.exe
+dist/log.txt

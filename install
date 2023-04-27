@@ -1,0 +1,6 @@
+#!/bin/bash
+./build &&
+sudo python3 install.py $(whoami)  &&
+sudo systemctl daemon-reload &&
+sudo systemctl enable server-backup-simple --now
+sudo systemctl restart server-backup-simple

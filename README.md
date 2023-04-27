@@ -9,9 +9,13 @@ App to be used to backup remote server including file folders using rsync and ba
 # For linux
 ./build
 
-#For windows
-.\build.ps1
 ```
 
 ## Create config file
-Copy the file dist/config_example.json and rename it as config.json and edit it with apropriated data.
+Create the folder dist/config and copy the file dist/config_example.json for it app you want to backup changing the data on it
+
+## Install service
+
+```
+./install
+```

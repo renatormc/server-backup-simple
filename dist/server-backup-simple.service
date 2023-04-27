@@ -1,0 +1,10 @@
+[Unit]
+Description=Server Backup Simple
+After=network.target
+
+[Service]
+User=$USER
+ExecStart=server-backup-simple scheduler -l
+
+[Install]
+WantedBy=multi-user.target
