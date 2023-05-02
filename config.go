@@ -13,26 +13,6 @@ import (
 type BackupConfig struct {
 	Name    string `toml:"name"`
 	Folders []struct {
-<<<<<<< HEAD
-		From string `json:"from"`
-		To   string `json:"to"`
-	} `json:"folders"`
-	DBSsh            string   `json:"db_ssh"`
-	DBDestFolder     string   `json:"db_dest_folder"`
-	DBContainerName  string   `json:"db_container_name"`
-	PgUser           string   `json:"pg_user"`
-	PgPassword       string   `json:"pg_password"`
-	PgHost           string   `json:"pg_host"`
-	PgPort           string   `json:"pg_port"`
-	PgDB             string   `json:"pg_db"`
-	BackupTimes      []string `json:"backup_times"`
-	BackupAtStartup  bool     `json:"backup_at_startup"`
-	DaysBeforeDelete int64    `json:"days_before_delete"`
-	RcloneSync       []struct {
-		From string `json:"from"`
-		To   string `json:"to"`
-	} `json:"rclone_sync"`
-=======
 		From string `toml:"from"`
 		To   string `toml:"to"`
 	} `toml:"folders"`
@@ -51,7 +31,6 @@ type BackupConfig struct {
 		From string `toml:"from"`
 		To   string `toml:"to"`
 	} `toml:"rclone_sync"`
->>>>>>> 38306391353dfe792d2d20930923c041cc31c585
 }
 
 type Config struct {
