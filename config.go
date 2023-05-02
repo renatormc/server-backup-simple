@@ -1,17 +1,19 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/BurntSushi/toml"
 )
 
 type BackupConfig struct {
-	Name    string `json:"name"`
+	Name    string `toml:"name"`
 	Folders []struct {
+<<<<<<< HEAD
 		From string `json:"from"`
 		To   string `json:"to"`
 	} `json:"folders"`
@@ -30,10 +32,30 @@ type BackupConfig struct {
 		From string `json:"from"`
 		To   string `json:"to"`
 	} `json:"rclone_sync"`
+=======
+		From string `toml:"from"`
+		To   string `toml:"to"`
+	} `toml:"folders"`
+	DBSsh            string   `toml:"db_ssh"`
+	DBDestFolder     string   `toml:"db_dest_folder"`
+	DBContainerName  string   `toml:"db_container_name"`
+	PgUser           string   `toml:"pg_user"`
+	PgPassword       string   `toml:"pg_password"`
+	PgHost           string   `toml:"pg_host"`
+	PgPort           string   `toml:"pg_port"`
+	PgDB             string   `toml:"pg_db"`
+	BackupTimes      []string `toml:"backup_times"`
+	BackupAtStartup  bool     `toml:"backup_at_startup"`
+	DaysBeforeDelete int64    `toml:"days_before_delete"`
+	RcloneSync       []struct {
+		From string `toml:"from"`
+		To   string `toml:"to"`
+	} `toml:"rclone_sync"`
+>>>>>>> 38306391353dfe792d2d20930923c041cc31c585
 }
 
 type Config struct {
-	AppDir string `json:"-"`
+	AppDir string
 }
 
 var config *Config
@@ -54,12 +76,8 @@ func ReadBackupConfig(name string) (*BackupConfig, error) {
 	cf := GetConfig()
 	folder := filepath.Join(cf.AppDir, "config")
 	c := BackupConfig{}
-	path := filepath.Join(folder, fmt.Sprintf("%s.json", name))
-	cont, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	err = json.Unmarshal(cont, &c)
+	path := filepath.Join(folder, fmt.Sprintf("%s.toml", name))
+	_, err := toml.DecodeFile(path, &c)
 	if err != nil {
 		return nil, err
 	}
@@ -75,16 +93,13 @@ func ReadBackupConfigs() []BackupConfig {
 	}
 	ret := []BackupConfig{}
 	for _, entry := range entries {
-		if !strings.HasSuffix(entry.Name(), ".json") {
+		if !strings.HasSuffix(entry.Name(), ".toml") {
 			continue
 		}
 		c := BackupConfig{}
 		path := filepath.Join(folder, entry.Name())
-		cont, err := os.ReadFile(path)
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = json.Unmarshal(cont, &c)
+
+		_, err := toml.DecodeFile(path, &c)
 		if err != nil {
 			log.Fatal(err)
 		}

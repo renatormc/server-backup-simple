@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -18,7 +19,13 @@ const TIME_LAYOUT = "2006-01-02 15_04_05"
 
 func BackupFolders(c BackupConfig) {
 	for _, f := range c.Folders {
-		cmd := exec.Command("rsync", "-avvHPS", "--rsh='ssh'", f.From, f.To)
+		args := []string{"rsync", "-avvHPS", "--rsh='ssh'", f.From, f.To}
+		var cmd *exec.Cmd
+		if runtime.GOOS == "windows" {
+			cmd = exec.Command("wsl", args...)
+		} else {
+			cmd = exec.Command(args[0], args[1:]...)
+		}
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
 		if err := cmd.Run(); err != nil {
@@ -37,7 +44,6 @@ func BackupDatabase(c BackupConfig) {
 	}
 
 	now := time.Now()
-	// fname := fmt.Sprintf("%d_%d_%d-%d_%d_%d.tar", now.Day(), now.Month(), now.Year(), now.Hour(), now.Minute(), now.Second())
 	fname := fmt.Sprintf("%s.tar", now.Format(TIME_LAYOUT))
 	outfile, err := os.Create(filepath.Join(c.DBDestFolder, fname))
 	if err != nil {
