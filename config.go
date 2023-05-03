@@ -34,13 +34,14 @@ type BackupConfig struct {
 }
 
 type Config struct {
-	AppDir string
+	AppDir  string
+	LogFile string
 }
 
 var config *Config
 
 func LoadConfig(appDir string) *Config {
-	config = &Config{AppDir: appDir}
+	config = &Config{AppDir: appDir, LogFile: filepath.Join(appDir, "log.txt")}
 	return config
 }
 

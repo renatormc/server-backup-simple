@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -63,11 +64,13 @@ func BackupAll(c BackupConfig) {
 	go func() {
 		log.Printf("Iniciando backup do banco de %q\n", c.Name)
 		BackupDatabase(c)
+		log.Printf("Backup do banco de %q finalizado.\n", c.Name)
 		defer wg.Done()
 	}()
 	go func() {
 		log.Printf("Iniciando sincronização das pastas de %q\n", c.Name)
 		BackupFolders(c)
+		log.Printf("Sincronização das pastas de %q finalizada.\n", c.Name)
 		defer wg.Done()
 	}()
 	wg.Wait()
@@ -109,6 +112,25 @@ func RcloneSync(c BackupConfig) {
 
 }
 
+func ReadTail(fileName string, n int) (string, error) {
+	file, err := os.Open(fileName)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	if len(lines) <= n {
+		return strings.Join(lines, "\n"), nil
+	}
+	return strings.Join(lines[len(lines)-n:], "\n"), nil
+}
+
 func main() {
 	parser := argparse.NewParser("Server backup simple", "App for making backup of database and files from server")
 	logToFile := parser.Flag("l", "logfile", &argparse.Options{Default: false, Help: "Log to file instead of console"})
@@ -119,6 +141,9 @@ func main() {
 	schedulerCmd := parser.NewCommand("scheduler", "Start scheduler")
 
 	deleteOldCmd := parser.NewCommand("delete-old", "Delete old files")
+
+	logCmd := parser.NewCommand("log", "Print log")
+	nLines := logCmd.Int("n", "lines", &argparse.Options{Default: 10, Help: "Number of lines of the tail"})
 
 	err := parser.Parse(os.Args)
 	if err != nil {
@@ -132,7 +157,7 @@ func main() {
 	}
 	cf := LoadConfig(filepath.Dir(ex))
 	if *logToFile {
-		f, err := os.OpenFile(filepath.Join(cf.AppDir, "log.txt"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		f, err := os.OpenFile(cf.LogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
 			panic(err)
 		}
@@ -173,6 +198,12 @@ func main() {
 		for _, c := range ReadBackupConfigs() {
 			DeleteOld(c)
 		}
+	case logCmd.Happened():
+		text, err := ReadTail(cf.LogFile, *nLines)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(text)
 
 	}
 }
