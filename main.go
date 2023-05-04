@@ -191,7 +191,6 @@ func main() {
 				}
 			}
 		}
-
 		log.Println("Starting scheduler")
 		<-gocron.Start()
 	case deleteOldCmd.Happened():
@@ -204,6 +203,5 @@ func main() {
 			log.Fatal(err)
 		}
 		fmt.Println(text)
-
 	}
 }
