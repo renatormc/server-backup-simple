@@ -48,13 +48,13 @@ func BackupDatabase(c BackupConfig) {
 	fname := fmt.Sprintf("%s.tar", now.Format(TIME_LAYOUT))
 	outfile, err := os.Create(filepath.Join(c.DBDestFolder, fname))
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	defer outfile.Close()
 	cmd.Stdout = outfile
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }
 
@@ -81,7 +81,7 @@ func DeleteOld(c BackupConfig) {
 	log.Printf("Deletando backups antigos de %q\n", c.Name)
 	entries, err := os.ReadDir(c.DBDestFolder)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	for _, entry := range entries {
 		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".tar") {
