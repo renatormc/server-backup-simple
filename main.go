@@ -42,7 +42,9 @@ func BackupDatabase(c BackupConfig) {
 		// cmd = exec.Command("ssh", cf.DBSsh, "docker", "exec", "-t", cf.DBContainerName, fmt.Sprintf("PGPASSWORD=%s", cf.PgPassword), "pg_dump", "-d", cf.PgDB, "-U", cf.PgUser, "-p", cf.PgPort, "-h", cf.PgHost, "-O", "-x", "-Ft")
 	} else {
 		if c.DBSsh == "" {
-			cmd = exec.Command(fmt.Sprintf("PGPASSWORD=%s", c.PgPassword), "pg_dump", "-d", c.PgDB, "-U", c.PgUser, "-p", c.PgPort, "-h", c.PgHost, "-O", "-x", "-Ft")
+			cmd.Env = os.Environ()
+			cmd.Env = append(cmd.Env, fmt.Sprintf("PGPASSWORD=%s", c.PgPassword))
+			cmd = exec.Command("pg_dump", "-d", c.PgDB, "-U", c.PgUser, "-p", c.PgPort, "-h", c.PgHost, "-O", "-x", "-Ft")
 		} else {
 			cmd = exec.Command("ssh", c.DBSsh, fmt.Sprintf("PGPASSWORD=%s", c.PgPassword), "pg_dump", "-d", c.PgDB, "-U", c.PgUser, "-p", c.PgPort, "-h", c.PgHost, "-O", "-x", "-Ft")
 		}
